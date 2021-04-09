@@ -17,7 +17,7 @@ class Missile (pygame.sprite.Sprite):
             height: The height of the platform. Recommended to be 50 or less.
         """
         super().__init__()
-        self.image = self.create_image(os.path.join("assets", "missile.png"), width, height)
+        self.image = self.create_image(os.path.join("assets", "bullet.png"), width, height)
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -55,3 +55,4 @@ class Missile (pygame.sprite.Sprite):
 
     def move(self):
         self.rect.x -= self.move_speed
+    
