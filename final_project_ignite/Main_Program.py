@@ -6,6 +6,7 @@ import pygame
 from platform import Platform
 from player import Player
 from missile import Missile
+from score import Score
 import random
 
 """
@@ -35,16 +36,16 @@ while True:
     platforms = pygame.sprite.Group()
 
     platforms.add(Platform(300, 600, 350, 50, platform_level))
-    platforms.add(Platform(700, 300, 250, 50, platform_level)) # upper middle benchmark 
-    platforms.add(Platform(700, 550, 250, 50, platform_level)) # lower middle benchmark
-    platforms.add(Platform(700, 250, 250, 50, platform_level))
-    platforms.add(Platform(700, 200, 250, 50, platform_level))
-    platforms.add(Platform(700, 150, 250, 50, platform_level))
-    platforms.add(Platform(700, 100, 250, 50, platform_level))
-    platforms.add(Platform(700, 50, 250, 50, platform_level))
-    platforms.add(Platform(700, 600, 250, 50, platform_level))
-    platforms.add(Platform(700, 650, 250, 50, platform_level))
-    platforms.add(Platform(700, 700, 250, 50, platform_level))
+    # platforms.add(Platform(700, 300, 400, 50, platform_level)) # upper middle benchmark 
+    # platforms.add(Platform(700, 550, 400, 50, platform_level)) # lower middle benchmark
+    # platforms.add(Platform(700, 250, 400, 50, platform_level))
+    platforms.add(Platform(700, 200, 400, 50, platform_level))
+    platforms.add(Platform(700, 150, 400, 50, platform_level))
+    platforms.add(Platform(700, 100, 400, 50, platform_level))
+    platforms.add(Platform(700, 50, 400, 50, platform_level))
+    platforms.add(Platform(700, 600, 400, 50, platform_level))
+    platforms.add(Platform(700, 650, 400, 50, platform_level))
+    platforms.add(Platform(700, 700, 400, 50, platform_level))
 
 
 
@@ -82,11 +83,19 @@ while True:
     death_message = pygame.image.load(os.path.join("assets", "death_message.png")).convert_alpha()
     death_message = pygame.transform.scale(death_message, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
+    controls = pygame.image.load(os.path.join("assets", "control_image.png")).convert_alpha()
+    controls = pygame.transform.scale(controls, (500,400))
+    screen_rect_controls = [50,0,550,450]
+    controls_start_moving = 4000
+    controls_start_moving_time = pygame.time.get_ticks()
+
     # Defines score variable and other variable related to score (score count, score time tracker (start), and print score (checks if score has been printed))
     score_uptick = 1000
     score_player_current = 0
     score_begin_count = pygame.time.get_ticks()
-    printed_score = False
+    score_sprite_group = pygame.sprite.Group()
+    score_sprite_group.add(Score(0,"score"))
+    score_sprite_group.add(Score(1,0))
     while True:
         """
         EVENTS section - how the code reacts when users do things
@@ -97,30 +106,21 @@ while True:
                 sys.exit()
             
         # Keyboard events
+        # flip gravity button
         keys_pressed = pygame.key.get_pressed()
         if keys_pressed[pygame.K_UP] or keys_pressed[pygame.K_w]:
             player.flip()
-            
+        # move left and right button
         if keys_pressed[pygame.K_LEFT] or keys_pressed[pygame.K_a]:
             player.move(-player.move_speed, 0)
         if keys_pressed[pygame.K_RIGHT] or keys_pressed[pygame.K_d]:
             player.move(player.move_speed, 0)
-        if keys_pressed[pygame.K_DOWN] or keys_pressed[pygame.K_s]:
-            pass  # Now that we have platforms, there's no reason to make the player move down.
+        # jump button
         if keys_pressed[pygame.K_SPACE]:
             player.jump()
         # restart key
         if keys_pressed[pygame.K_r]:
             break
-        # Mouse events
-        mouse_pos = pygame.mouse.get_pos()  # Get position of mouse as a tuple representing the
-        # (x, y) coordinate
-
-        mouse_buttons = pygame.mouse.get_pressed()
-        if mouse_buttons[0]:  # If left mouse pressed
-            pass
-        if mouse_buttons[2]:  # If right mouse pressed
-            pass  # Replace this line
 
         """
         UPDATE section - manipulate everything on the screen
@@ -129,6 +129,11 @@ while True:
         players.update()
         platforms.update()
         missiles.update()
+        
+        # moves tutorial image
+        if controls_start_moving <= pygame.time.get_ticks() - controls_start_moving_time:
+            screen_rect_controls[0] -= 1
+
 
         # if the player hasn't died 
         if death == False: 
@@ -231,12 +236,34 @@ while True:
             if score_current_time >= score_uptick:
                 score_begin_count = pygame.time.get_ticks()
                 score_player_current += 1
-        
-        # if player has died 
-        if death == True:
-            if printed_score == False:
-                printed_score = True
-                print("Score: " + str(score_player_current))
+                score_player_current_string = str(score_player_current)
+                score_sprite_group = pygame.sprite.Group()
+                score_sprite_group.add(Score(0,"score"))
+                place_value = 1
+                for x in score_player_current_string:
+                    if x == "0":
+                        score_sprite_group.add(Score(place_value,0))
+                    elif x == "1":
+                        score_sprite_group.add(Score(place_value,1))
+                    elif x == "2":
+                        score_sprite_group.add(Score(place_value,2))
+                    elif x == "3":
+                        score_sprite_group.add(Score(place_value,3))
+                    elif x == "4":
+                        score_sprite_group.add(Score(place_value,4))
+                    elif x == "5":
+                        score_sprite_group.add(Score(place_value,5))
+                    elif x == "6":
+                        score_sprite_group.add(Score(place_value,6))
+                    elif x == "7":
+                        score_sprite_group.add(Score(place_value,7))
+                    elif x == "8":
+                        score_sprite_group.add(Score(place_value,8))
+                    elif x == "9":
+                        score_sprite_group.add(Score(place_value,9))
+                    else:
+                        pass
+                    place_value += 1
         
             
 
@@ -248,9 +275,12 @@ while True:
         
         # draws background, platforms, player, missiles and death message if needed
         screen.blit(background, screen_rect)
+        score_sprite_group.draw(screen)
         platforms.draw(screen)
         players.draw(screen)
         missiles.draw(screen)
+        screen.blit(controls, screen_rect_controls)
+        # if player is died
         if death == True:
             screen.blit(death_message, screen_rect)
         pygame.display.flip()  # Pygame uses a double-buffer, without this we see half-completed frames

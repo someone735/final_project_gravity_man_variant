@@ -67,7 +67,4 @@ class Platform(pygame.sprite.Sprite):
             self.rect.x += self.temp_speed
         else:
             self.rect.x += self.x_speed
-
-    def increase_speed(self):
-        self.x_speed -= 0.01
         
