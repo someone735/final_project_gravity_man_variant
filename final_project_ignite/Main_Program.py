@@ -54,7 +54,8 @@ while True:
     players = pygame.sprite.Group()
     players.add(player)
 
-
+    # defines all variables related to platforms 
+    # (when to create and change platform creation, when to change platform speed)
     platform_creation_time = 3000 
     platform_speed_time = platform_creation_time * 5
     creation_start_time = pygame.time.get_ticks()
@@ -76,13 +77,12 @@ while True:
     # Defines death variable (triggers when to switch)
     death = False
 
-    # Create background image and death message image
+    # Create background image, death message image and tutorial image
     background = pygame.image.load(os.path.join("assets", "background.jpg")).convert_alpha()
     background = pygame.transform.scale(background, (SCREEN_WIDTH, SCREEN_HEIGHT))
     screen_rect = screen.get_rect()
     death_message = pygame.image.load(os.path.join("assets", "death_message.png")).convert_alpha()
     death_message = pygame.transform.scale(death_message, (SCREEN_WIDTH, SCREEN_HEIGHT))
-
     controls = pygame.image.load(os.path.join("assets", "control_image.png")).convert_alpha()
     controls = pygame.transform.scale(controls, (500,400))
     screen_rect_controls = [50,0,550,450]
@@ -273,7 +273,7 @@ while True:
         """
         screen.fill(BLACK)  # Fill the screen with one colour
         
-        # draws background, platforms, player, missiles and death message if needed
+        # draws background, platforms, player, missiles, tutorial image, score and death message if needed
         screen.blit(background, screen_rect)
         score_sprite_group.draw(screen)
         platforms.draw(screen)
