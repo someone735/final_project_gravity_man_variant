@@ -5,12 +5,19 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
 
-        image_location = os.path.join("assets", "player.png")
-        self.walking_right_image = pygame.image.load(image_location).convert_alpha()
-        self.walking_left_image = pygame.transform.flip(self.walking_right_image, True, False)
-        self.walking_left_rightside_up = pygame.transform.flip(self.walking_left_image, False, True)
-        self.walking_right_rightside_up = pygame.transform.flip(self.walking_right_image, False, True)
-        self.image = self.walking_right_image
+        # image_location = os.path.join("assets", "player.png")
+        # self.walking_right_image = pygame.image.load(image_location).convert_alpha()
+        # self.walking_left_image = pygame.transform.flip(self.walking_right_image, True, False)
+        # self.walking_left_rightside_up = pygame.transform.flip(self.walking_left_image, False, True)
+        # self.walking_right_rightside_up = pygame.transform.flip(self.walking_right_image, False, True)
+        
+        self.walking_right_1_image = pygame.image.load(os.path.join("assets", "player_image", "player1.png")).convert_alpha()
+        self.walking_right_2_image = pygame.image.load(os.path.join("assets", "player_image", "player2.png")).convert_alpha()
+        self.walking_right_3_image = pygame.image.load(os.path.join("assets", "player_image", "player3.png")).convert_alpha()
+        self.walking_right_4_image = pygame.image.load(os.path.join("assets", "player_image", "player4.png")).convert_alpha()
+
+        
+        self.image = self.walking_right_1_image
         self.rect = self.image.get_rect()
         self.left = False
 
@@ -26,33 +33,90 @@ class Player(pygame.sprite.Sprite):
         self.can_flip = True
         self.can_jump = True
         self.rightside_up = True
+
+        self.image_direction = 1
+        self.time = pygame.time.get_ticks()
  
     def update(self):
         # Move the player based on whatever the x_speed and y_speed are
         self.move(self.x_speed, self.y_speed)
         # Make the player fall due to gravity
         self.fall()
-        if self.rightside_up == False:
-            if self.left == True:
-                self.image = self.walking_left_rightside_up
-            else:
-                self.image = self.walking_right_rightside_up
-        elif self.rightside_up == True:
-            if self.left == True:
-                self.image = self.walking_left_image
-            else:
-                self.image = self.walking_right_image
-
+        # if self.rightside_up == False:
+        #     if self.image_direction == 1:
+        #         if self.left == True:
+        #             self.image = self.walking_left_rightside_up
+        #         else:
+        #             self.image = self.walking_right_rightside_up
+        # elif self.rightside_up == True:
+        #     if self.left == True:
+        #         self.image = self.walking_left_image
+        #     else:
+        #         self.image = self.walking_right_image
     def move(self, x_change, y_change):
         self.rect.x += x_change
         self.rect.y += y_change 
         
         if x_change > 0:
-            self.image = self.walking_right_image
             self.left = False
         elif x_change < 0:
-            self.image = self.walking_left_image
             self.left = True
+        
+        if self.rightside_up == True and self.left == False:
+            if self.image_direction >= 1 and self.image_direction < 2:
+                self.image = self.walking_right_1_image
+            elif self.image_direction >= 2 and self.image_direction < 3:
+                self.image = self.walking_right_2_image
+            elif self.image_direction >= 3 and self.image_direction < 4:
+                self.image = self.walking_right_3_image
+            elif self.image_direction >= 4 and self.image_direction < 5:
+                self.image = self.walking_right_4_image
+
+        elif self.rightside_up == True and self.left == True:
+            if self.image_direction >= 1 and self.image_direction < 2:
+                self.image = self.walking_right_1_image
+                self.image = pygame.transform.flip(self.image, True, False)
+            elif self.image_direction >= 2 and self.image_direction < 3:
+                self.image = self.walking_right_2_image
+                self.image = pygame.transform.flip(self.image, True, False)
+            elif self.image_direction >= 3 and self.image_direction < 4:
+                self.image = self.walking_right_3_image
+                self.image = pygame.transform.flip(self.image, True, False)
+            elif self.image_direction >= 4 and self.image_direction < 5:
+                self.image = self.walking_right_4_image
+                self.image = pygame.transform.flip(self.image, True, False)
+
+        elif self.rightside_up == False and self.left == False:
+            if self.image_direction >= 1 and self.image_direction < 2:
+                self.image = self.walking_right_1_image
+                self.image = pygame.transform.flip(self.image, False, True)
+            elif self.image_direction >= 2 and self.image_direction < 3:
+                self.image = self.walking_right_2_image
+                self.image = pygame.transform.flip(self.image, False, True)
+            elif self.image_direction >= 3 and self.image_direction < 4:
+                self.image = self.walking_right_3_image
+                self.image = pygame.transform.flip(self.image, False, True)
+            elif self.image_direction >= 4 and self.image_direction < 5:
+                self.image = self.walking_right_4_image
+                self.image = pygame.transform.flip(self.image, False, True)
+
+
+        elif self.rightside_up == False and self.left == True:
+            if self.image_direction >= 1 and self.image_direction < 2:
+                self.image = self.walking_right_1_image
+                self.image = pygame.transform.flip(self.image, True, True)
+            elif self.image_direction >= 2 and self.image_direction < 3:
+                self.image = self.walking_right_2_image
+                self.image = pygame.transform.flip(self.image, True, True)
+            elif self.image_direction >= 3 and self.image_direction < 4:
+                self.image = self.walking_right_3_image
+                self.image = pygame.transform.flip(self.image, True, True)
+            elif self.image_direction >= 4 and self.image_direction < 5:
+                self.image = self.walking_right_4_image
+                self.image = pygame.transform.flip(self.image, True, True)
+        
+        if self.image_direction >= 5:
+            self.image_direction = 1
 
     def fall(self):
         self.y_speed += self.gravity

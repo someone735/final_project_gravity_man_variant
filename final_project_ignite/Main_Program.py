@@ -31,10 +31,9 @@ clock = pygame.time.Clock()
 
 # Platforms sprite group
 while True:
-    platform_level = -2
-    missile_level = 7.5
+    # creates platform sprite group and adds beginning platfroms and defines platform speed
     platforms = pygame.sprite.Group()
-
+    platform_level = -2
     platforms.add(Platform(300, 600, 350, 50, platform_level))
     # platforms.add(Platform(700, 300, 400, 50, platform_level)) # upper middle benchmark 
     # platforms.add(Platform(700, 550, 400, 50, platform_level)) # lower middle benchmark
@@ -65,14 +64,16 @@ while True:
     
     # Create missile sprite group and other variables related to missile sprite
     # (beginning firing time, firing time tracker (start and current), missile frequency time and time tracker)
+    # (and current missile speed)
     missiles = pygame.sprite.Group()
+    missile_level = 7.5
     missile_begin_firing_time = pygame.time.get_ticks()
     missile_firing_start_time = 10000
     missile_fire_time = 15000
     missile_begin_firing = False
     missile_begin_frequency_increase = False
     missile_frequency_increase_start_time = pygame.time.get_ticks()
-    missile_frequency_increase_time = 25000
+    missile_frequency_increase_time = 15000
     
     # Defines death variable (triggers when to switch)
     death = False
@@ -80,9 +81,9 @@ while True:
     # Create background image, death message image and tutorial image
     background = pygame.image.load(os.path.join("assets", "background.jpg")).convert_alpha()
     background = pygame.transform.scale(background, (SCREEN_WIDTH, SCREEN_HEIGHT))
-    screen_rect = screen.get_rect()
+    screen_rect = [0,0,1000,700]
     death_message = pygame.image.load(os.path.join("assets", "death_message.png")).convert_alpha()
-    death_message = pygame.transform.scale(death_message, (SCREEN_WIDTH, SCREEN_HEIGHT))
+    death_message = pygame.transform.scale(death_message, (SCREEN_WIDTH, 700))
     controls = pygame.image.load(os.path.join("assets", "control_image.png")).convert_alpha()
     controls = pygame.transform.scale(controls, (500,400))
     screen_rect_controls = [50,0,550,450]
@@ -113,8 +114,10 @@ while True:
         # move left and right button
         if keys_pressed[pygame.K_LEFT] or keys_pressed[pygame.K_a]:
             player.move(-player.move_speed, 0)
+            player.image_direction += 0.2
         if keys_pressed[pygame.K_RIGHT] or keys_pressed[pygame.K_d]:
             player.move(player.move_speed, 0)
+            player.image_direction += 0.2
         # jump button
         if keys_pressed[pygame.K_SPACE]:
             player.jump()
@@ -125,6 +128,7 @@ while True:
         """
         UPDATE section - manipulate everything on the screen
         """
+
         # updates all sprites in sprite groups 
         players.update()
         platforms.update()
@@ -180,7 +184,7 @@ while True:
                     decrease_plat_creation = True
                     if platform_level < -3:
                         increase_plat_speed = False
-                elif platform_creation_time < 1800:
+                elif platform_creation_time < 2000:
                     decrease_plat_creation = False
                     if platform_level > -2:
                         increase_plat_speed = True
@@ -190,9 +194,9 @@ while True:
                 elif increase_plat_speed == False:
                     platform_level += 0.070
                 if decrease_plat_creation == True:
-                    platform_creation_time -= 300
+                    platform_creation_time -= 350
                 elif decrease_plat_creation == False:
-                    platform_creation_time += 300
+                    platform_creation_time += 350
 
             # handles missile begin firing time 
             missile_begin_firing_current_time = pygame.time.get_ticks() - missile_begin_firing_time
@@ -205,7 +209,7 @@ while True:
                 missile_firing_current_time = pygame.time.get_ticks() - missile_begin_firing_time       
                 if missile_firing_current_time >= missile_fire_time:
                     missile_begin_firing_time = pygame.time.get_ticks()
-                    missiles.add(Missile(SCREEN_WIDTH, player.rect.y-25, 75, 75, missile_level))
+                    missiles.add(Missile(SCREEN_WIDTH, player.rect.y-15, 75, 75, missile_level))
             
             # handles missile spawn rate
             if missile_begin_frequency_increase == True:
@@ -275,14 +279,45 @@ while True:
         
         # draws background, platforms, player, missiles, tutorial image, score and death message if needed
         screen.blit(background, screen_rect)
-        score_sprite_group.draw(screen)
-        platforms.draw(screen)
-        players.draw(screen)
-        missiles.draw(screen)
-        screen.blit(controls, screen_rect_controls)
+        if death == False:
+            pygame.draw.rect(screen, (255,255,255), (580, 0, SCREEN_WIDTH-590, 50))
+            score_sprite_group.draw(screen)
+            platforms.draw(screen)
+            players.draw(screen)
+            missiles.draw(screen)
+            screen.blit(controls, screen_rect_controls)
         # if player is died
         if death == True:
             screen.blit(death_message, screen_rect)
+            score_sprite_group = pygame.sprite.Group()
+            place_value = 1
+            score_sprite_group = pygame.sprite.Group()
+            place_value = 1
+            for x in score_player_current_string:
+                if x == "0":
+                    score_sprite_group.add(Score(place_value,0, True))
+                elif x == "1":
+                    score_sprite_group.add(Score(place_value,1, True))
+                elif x == "2":
+                    score_sprite_group.add(Score(place_value,2, True))
+                elif x == "3":
+                    score_sprite_group.add(Score(place_value,3, True))
+                elif x == "4":
+                    score_sprite_group.add(Score(place_value,4, True))
+                elif x == "5":
+                    score_sprite_group.add(Score(place_value,5, True))
+                elif x == "6":
+                    score_sprite_group.add(Score(place_value,6, True))
+                elif x == "7":
+                    score_sprite_group.add(Score(place_value,7, True))
+                elif x == "8":
+                    score_sprite_group.add(Score(place_value,8, True))
+                elif x == "9":
+                    score_sprite_group.add(Score(place_value,9, True))
+                else:
+                    pass
+                place_value += 1
+            score_sprite_group.draw(screen)
         pygame.display.flip()  # Pygame uses a double-buffer, without this we see half-completed frames
         clock.tick(FRAME_RATE)  # Pause the clock to always maintain FRAME_RATE frames per second
         
